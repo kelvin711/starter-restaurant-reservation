@@ -6,7 +6,10 @@
 
 const router = require("express").Router();
 const controller = require("./reservations.controller");
+const validationMiddleware = require("../middleware/validation.middleware")
 
-router.route("/").get(controller.list);
+router.route("/")
+  .get(validationMiddleware.hasQuery, controller.list)
+  .post(validationMiddleware.hasRequiredFields, controller.create);
 
 module.exports = router;
