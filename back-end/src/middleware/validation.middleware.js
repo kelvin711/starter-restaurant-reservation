@@ -16,6 +16,20 @@ function isPositiveInteger(value) {
     return Number.isInteger(value) && value > 0;
 }
 
+function isFutureDate(dateString) {
+    const reservationDate = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return reservationDate >= today;
+}
+
+function isNotTuesday(dateString) {
+    // Parse the dateString as local time by adding the time part
+    const localDateString = `${dateString}T00:00:00`;
+    const reservationDate = new Date(localDateString);
+    return reservationDate.getDay() !== 2;
+}
+
 function hasRequiredFields(req, res, next) {
     const { data } = req.body;
     if (!data) {
@@ -62,16 +76,28 @@ function validateDateQuery(req, res, next) {
 function hasQuery(req, res, next) {
     const dateFormat = /\d{4}-\d{2}-\d{2}/;
     if (req.query.date && dateFormat.test(req.query.date)) {
-      res.locals.date = req.query.date;
+        res.locals.date = req.query.date;
     }
     if (req.query.mobile_number) {
-      res.locals.mobile_number = req.query.mobile_number;
+        res.locals.mobile_number = req.query.mobile_number;
     }
     next();
-  }
+}
+
+function validateReservationDate(req, res, next) {
+    const { reservation_date } = req.body.data;
+    if (!isFutureDate(reservation_date)) {
+        return res.status(400).json({ error: "Reservation must occur in the future." });
+    }
+    if (!isNotTuesday(reservation_date)) {
+        return res.status(400).json({ error: "The restaurant is closed on Tuesdays." });
+    }
+    return next();
+}
 
 module.exports = {
     hasRequiredFields,
     validateDateQuery,
-    hasQuery
+    hasQuery,
+    validateReservationDate
 };

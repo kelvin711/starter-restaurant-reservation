@@ -10,6 +10,10 @@ const validationMiddleware = require("../middleware/validation.middleware")
 
 router.route("/")
   .get(validationMiddleware.hasQuery, controller.list)
-  .post(validationMiddleware.hasRequiredFields, controller.create);
+  .post(
+    validationMiddleware.hasRequiredFields, 
+    validationMiddleware.validateReservationDate, 
+    controller.create
+);
 
 module.exports = router;
