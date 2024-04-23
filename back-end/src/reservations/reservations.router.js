@@ -6,7 +6,7 @@
 
 const router = require("express").Router();
 const controller = require("./reservations.controller");
-const validationMiddleware = require("../middleware/validation.middleware")
+const validationMiddleware = require("../middleware/reservationValidation.middleware")
 
 router.route("/")
   .get(validationMiddleware.hasQuery, controller.list)
