@@ -30,6 +30,21 @@ function isNotTuesday(dateString) {
     return reservationDate.getDay() !== 2;
 }
 
+function isValidTimeframe(timeString) {
+    const minutes = (h, m) => h * 60 + m;
+    const reservationTime = minutes(...timeString.split(':').map(Number));
+    const openingTime = minutes(10, 30); // 10:30 AM in minutes
+    const lastSeatingTime = minutes(21, 30); // 9:30 PM in minutes
+    return reservationTime >= openingTime && reservationTime <= lastSeatingTime;
+}
+
+function isNotInThePast(dateString, timeString) {
+    const reservationDateTime = new Date(`${dateString}T${timeString}`);
+    const now = new Date();
+    return reservationDateTime >= now;
+}
+
+
 function hasRequiredFields(req, res, next) {
     const { data } = req.body;
     if (!data) {
@@ -95,9 +110,25 @@ function validateReservationDate(req, res, next) {
     return next();
 }
 
+function validateReservationTime(req, res, next) {
+    const { reservation_date, reservation_time } = req.body.data;
+
+    if (!isValidTimeframe(reservation_time)) {
+        return res.status(400).json({ error: "Reservation time must be between 10:30 AM and 9:30 PM." });
+    }
+
+    if (!isNotInThePast(reservation_date, reservation_time)) {
+        return res.status(400).json({ error: "Reservation date and time must be in the future." });
+    }
+
+    next();
+}
+
+
 module.exports = {
     hasRequiredFields,
     validateDateQuery,
     hasQuery,
-    validateReservationDate
+    validateReservationDate,
+    validateReservationTime
 };

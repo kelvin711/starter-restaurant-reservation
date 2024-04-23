@@ -13,6 +13,7 @@ router.route("/")
   .post(
     validationMiddleware.hasRequiredFields, 
     validationMiddleware.validateReservationDate, 
+    validationMiddleware.validateReservationTime,
     controller.create
 );
 
