@@ -8,9 +8,17 @@ async function listTables() {
     return tables;
   } catch (error) {
     console.error(error);
-    throw error; 
+    throw error;
   }
 }
+
+async function createTable(tableData) {
+  const [createdTable] = await knex('tables')
+    .insert(tableData)
+    .returning('*');
+  return createdTable;
+}
+
 async function readTable(table_id) {
   const table = await knex('tables')
     .select('*')
@@ -22,5 +30,6 @@ async function readTable(table_id) {
 
 module.exports = {
   listTables,
+  createTable,
   readTable,
 };

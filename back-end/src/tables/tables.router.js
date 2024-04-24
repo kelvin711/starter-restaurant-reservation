@@ -9,7 +9,8 @@ const controller = require("./tables.controller");
 const validationMiddleware = require("../middleware/tableValidation.middleware")
 
 router.route("/")
-    .get(controller.list);
+    .get(controller.list)
+    .post(validationMiddleware.validateTableData, controller.create);
 
 router.route("/:table_id")
     .get(controller.getTableById);

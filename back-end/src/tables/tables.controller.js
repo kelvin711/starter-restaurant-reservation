@@ -3,6 +3,7 @@
  */
 const {
     listTables,
+    createTable,
     readTable
 } = require("./tables.service");
 
@@ -10,6 +11,16 @@ async function list(req, res, next) {
     try {
         const data = await listTables();
         res.json({ data });
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function create(req, res, next) {
+    const tableData = req.body.data;
+    try {
+        const data = await createTable(tableData);
+        res.status(201).json({ data });
     } catch (error) {
         next(error);
     }
@@ -25,10 +36,11 @@ async function getTableById(req, res, next) {
         }
         res.json({ data: table });
     } catch (error) {
-        next(error); 
+        next(error);
     }
 }
 module.exports = {
     list,
+    create,
     getTableById,
 };
