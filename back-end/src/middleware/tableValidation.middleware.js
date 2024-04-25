@@ -30,6 +30,19 @@ function validateTableData(req, res, next) {
     next();
 }
 
+function validateSeatRequest(req, res, next) {
+    const { data } = req.body;
+    if (!data || !data.reservation_id) {
+        return res.status(400).json({ error: "Data is missing or reservation_id is missing" });
+    }
+    if (typeof data.reservation_id !== 'number') {
+        return res.status(400).json({ error: "reservation_id must be a number" });
+    }
+    next();
+}
+
+
 module.exports = {
     validateTableData,
+    validateSeatRequest
 };

@@ -10,7 +10,14 @@ const validationMiddleware = require("../middleware/tableValidation.middleware")
 
 router.route("/")
     .get(controller.list)
-    .post(validationMiddleware.validateTableData, controller.create);
+    .post(
+        validationMiddleware.validateTableData, 
+        controller.create
+    );
+
+router.route("/:table_id/seat")
+    .put(validationMiddleware.validateSeatRequest, controller.seat)
+    .delete(controller.completeTable);
 
 router.route("/:table_id")
     .get(controller.getTableById);

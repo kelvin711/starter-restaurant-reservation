@@ -10,7 +10,6 @@ async function listReservations(date) {
   return knex('reservations').select('*');
 }
 
-
 function createReservation(newReservation) {
   return knex("reservations")
     .insert(newReservation)
@@ -18,7 +17,17 @@ function createReservation(newReservation) {
     .then((createdRecords) => createdRecords[0]);
 }
 
+async function readReservation(reservationId) {
+  const reservation = await knex('reservations')
+    .select('*')
+    .where({ reservation_id: reservationId })
+    .first();
+  return reservation;
+}
+
+
 module.exports = {
   listReservations,
+  readReservation,
   createReservation,
 };
