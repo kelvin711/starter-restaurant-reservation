@@ -124,11 +124,34 @@ function validateReservationTime(req, res, next) {
     next();
 }
 
+function validateReservationStatus(req, res, next) {
+    const { status } = req.body.data;
+
+    // Allow only 'booked' status for new reservations
+    if (status && status !== 'booked') {
+        return res.status(400).json({ error: `Invalid reservation status: '${status}'. Only 'booked' is allowed for new reservations.` });
+    }
+
+    next();
+}
+
+function validateStatus(req, res, next) {
+    const validStatuses = ['booked', 'seated', 'finished'];
+    const { status } = req.body.data;
+
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: `Invalid status value: ${status}` });
+    }
+
+    next();
+}
 
 module.exports = {
     hasRequiredFields,
     validateDateQuery,
     hasQuery,
     validateReservationDate,
-    validateReservationTime
+    validateReservationTime,
+    validateReservationStatus,
+    validateStatus
 };

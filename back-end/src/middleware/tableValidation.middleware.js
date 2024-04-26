@@ -31,13 +31,28 @@ function validateTableData(req, res, next) {
 }
 
 function validateSeatRequest(req, res, next) {
+    // const { data } = req.body;
+
+    // if (!data || !data.reservation_id) {
+    //     return res.status(400).json({ error: "Data is missing or reservation_id is missing" });
+    // }
+    // if (typeof data.reservation_id !== 'number') {
+    //     return res.status(400).json({ error: "reservation_id must be a number" });
+    // }
+
+    // next();
     const { data } = req.body;
-    if (!data || !data.reservation_id) {
-        return res.status(400).json({ error: "Data is missing or reservation_id is missing" });
+    if (!data || data.reservation_id === undefined) {
+        return res.status(400).json({ error: "Data is missing or reservation_id is missing." });
     }
-    if (typeof data.reservation_id !== 'number') {
-        return res.status(400).json({ error: "reservation_id must be a number" });
+
+    const reservationId = parseInt(data.reservation_id, 10);
+    if (isNaN(reservationId)) {
+        return res.status(400).json({ error: "reservation_id must be a valid number." });
     }
+
+    // Attach the parsed reservationId to the request object for further use
+    req.parsedReservationId = reservationId;
     next();
 }
 

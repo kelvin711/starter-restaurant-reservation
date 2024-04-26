@@ -6,8 +6,9 @@ const {
     createTable,
     seatAtTable,
     readTable,
-    finishTable
+    finishTable,
 } = require("./tables.service");
+const { validateReservationExists } = require("../reservations/reservations.service")
 
 async function list(req, res, next) {
     try {
@@ -45,36 +46,39 @@ async function getTableById(req, res, next) {
 async function seat(req, res, next) {
     const { table_id } = req.params;
     const { reservation_id } = req.body.data;
-
+  
     try {
-        await seatAtTable(table_id, reservation_id);
-        res.status(200).json({ data: { status: 'seated' } });
+      await seatAtTable(table_id, reservation_id);
+      res.status(200).json({ data: { status: 'seated' } });
     } catch (error) {
-        if (error.message.includes('not found')) {
-            return res.status(404).json({ error: error.message });
-        }
+      if (error.message.includes('not found') || error.message.includes('does not exist')) {
+        return res.status(404).json({ error: error.message });
+      } else if (error.message.includes('already occupied') || error.message.includes('sufficient capacity') || error.message.includes('already seated')) {
         return res.status(400).json({ error: error.message });
-    }
+      } else {
+        next(error); 
+      }
+    }   
 }
 
 async function completeTable(req, res, next) {
     const { table_id } = req.params;
     try {
-      const table = await readTable(table_id);
-      if (!table) {
-        return res.status(404).json({ error: `Table with ID ${table_id} not found.` });
-      }
-      if (!table.reservation_id) {
-        return res.status(400).json({ error: "Table is not occupied." });
-      }
-  
-      await finishTable(table_id);
-      res.status(200).json({ data: { message: "Table has been cleared." } });
+        const table = await readTable(table_id);
+        if (!table) {
+            return res.status(404).json({ error: `Table with ID ${table_id} not found.` });
+        }
+        if (!table.reservation_id) {
+            return res.status(400).json({ error: "Table is not occupied." });
+        }
+
+        await finishTable(table_id);
+        res.status(200).json({ data: { message: "Table has been cleared." } });
     } catch (error) {
-      next(error);
+        next(error);
     }
-  }
-  
+}
+
 
 module.exports = {
     list,
