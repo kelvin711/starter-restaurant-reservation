@@ -44,7 +44,6 @@ function isNotInThePast(dateString, timeString) {
     return reservationDateTime >= now;
 }
 
-
 function hasRequiredFields(req, res, next) {
     const { data } = req.body;
     if (!data) {
@@ -136,7 +135,7 @@ function validateReservationStatus(req, res, next) {
 }
 
 function validateStatus(req, res, next) {
-    const validStatuses = ['booked', 'seated', 'finished'];
+    const validStatuses = ['booked', 'seated', 'finished', 'cancelled'];
     const { status } = req.body.data;
 
     if (!validStatuses.includes(status)) {

@@ -6,6 +6,7 @@ const {
   listReservationsByDate,
   readReservation,
   createReservation,
+  changeReservation,
   updateReservationStatus,
   searchReservationsByPhoneNumber
 } = require("./reservations.service");
@@ -32,13 +33,13 @@ async function list(req, res, next) {
 }
 
 async function read(req, res, next) {
-  const { reservation_Id } = req.params;
+  const { reservation_id } = req.params;
 
   try {
-    const reservation = await readReservation(reservation_Id);
+    const reservation = await readReservation(reservation_id);
 
     if (!reservation) {
-      return res.status(404).json({ error: `Reservation with ID ${reservation_Id} not found.` });
+      return res.status(404).json({ error: `Reservation with ID ${reservation_id} not found.` });
     }
 
     res.status(200).json({ data: reservation });
@@ -62,6 +63,10 @@ async function updateStatus(req, res, next) {
 
   try {
     const updatedReservation = await updateReservationStatus(reservation_id, status);
+    if (!updatedReservation) {
+      return res.status(404).json({ error: `Reservation with ID ${reservation_id} not found.` });
+    }
+
     res.status(200).json({ data: updatedReservation });
   } catch (error) {
     const message = error.message;
@@ -75,9 +80,24 @@ async function updateStatus(req, res, next) {
   }
 }
 
+async function updateReservation(req, res, next) {
+  const reservationId = req.params.reservation_id; // Extract the reservation ID from the URL
+  console.log('Controller received ID:', reservationId); // Log the received ID for debugging
+  
+  try {
+    // Call the service function with the updated reservation data and the ID
+    const data = await changeReservation(req.body.data, reservationId); 
+    res.status(200).json({ data });
+  } catch (error) {
+    console.error('Controller error:', error.message); // Log the error message
+    next(error); // Pass any errors to the error handling middleware
+  }
+}
+
 module.exports = {
   list,
   read,
   create,
   updateStatus,
+  updateReservation
 };

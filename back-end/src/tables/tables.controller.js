@@ -8,7 +8,6 @@ const {
     readTable,
     finishTable,
 } = require("./tables.service");
-const { validateReservationExists } = require("../reservations/reservations.service")
 
 async function list(req, res, next) {
     try {
@@ -78,7 +77,6 @@ async function completeTable(req, res, next) {
         next(error);
     }
 }
-
 
 module.exports = {
     list,

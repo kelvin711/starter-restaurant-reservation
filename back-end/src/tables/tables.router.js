@@ -3,7 +3,6 @@
  *
  * @type {Router}
  */
-
 const router = require("express").Router();
 const controller = require("./tables.controller");
 const validationMiddleware = require("../middleware/tableValidation.middleware")

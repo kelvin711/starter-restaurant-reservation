@@ -14,11 +14,11 @@ async function listReservationsByDate(date) {
     .orderBy(['reservation_date', 'reservation_time']);
 }
 
-function createReservation(newReservation) {
-  return knex("reservations")
+async function createReservation(newReservation) {
+  const createdRecords = await knex("reservations")
     .insert(newReservation)
-    .returning("*")
-    .then((createdRecords) => createdRecords[0]);
+    .returning("*");
+  return createdRecords[0];
 }
 
 async function readReservation(reservationId) {
@@ -27,6 +27,25 @@ async function readReservation(reservationId) {
     .where({ reservation_id: reservationId })
     .first();
   return reservation;
+}
+
+async function changeReservation(updatedReservation, reservationId) {
+  try {
+    const updatedRecords = await knex("reservations")
+      .where({ reservation_id: reservationId }) // Use the reservation ID from the request parameters
+      .update(updatedReservation, "*");
+
+    if (!updatedRecords || updatedRecords.length === 0) {
+      const error = new Error(`Reservation with ID ${reservationId} not found.`);
+      error.status = 404; // Set the status for the error handler
+      throw error;
+    }
+
+    return updatedRecords[0]; // Return the first (and should be only) updated record
+  } catch (error) {
+    console.error('Service error:', error.message); // Log the error message
+    throw error; // Rethrow the error to be caught by the controller
+  }
 }
 
 async function updateReservationStatus(reservation_id, status) {
@@ -51,19 +70,6 @@ async function updateReservationStatus(reservation_id, status) {
   });
 }
 
-async function validateReservationExists(reservation_id) {
-  const reservation = await knex('reservations')
-    .select('*')
-    .where({ reservation_id })
-    .first();
-
-  if (!reservation) {
-    throw new Error(`No reservation with ID ${reservation_id}`);
-  }
-
-  return reservation; // Proceed with a valid reservation
-}
-
 function searchReservationsByPhoneNumber(mobile_number) {
   return knex("reservations")
     .whereRaw(
@@ -73,13 +79,12 @@ function searchReservationsByPhoneNumber(mobile_number) {
     .orderBy("reservation_date");
 }
 
-
 module.exports = {
   listReservations,
   listReservationsByDate,
   readReservation,
   createReservation,
   updateReservationStatus,
-  validateReservationExists,
-  searchReservationsByPhoneNumber
+  searchReservationsByPhoneNumber,
+  changeReservation
 };

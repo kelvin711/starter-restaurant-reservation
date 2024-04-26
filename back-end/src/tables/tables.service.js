@@ -102,8 +102,6 @@ async function finishTable(table_id) {
   });
 }
 
-
-
 module.exports = {
   listTables,
   createTable,

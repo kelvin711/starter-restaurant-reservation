@@ -1,5 +1,3 @@
-// src/middleware/tablesValidation.middleware.js
-
 function validateTableData(req, res, next) {
     const { data } = req.body;
 

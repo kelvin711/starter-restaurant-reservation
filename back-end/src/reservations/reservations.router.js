@@ -3,13 +3,18 @@
  *
  * @type {Router}
  */
-
 const router = require("express").Router();
 const controller = require("./reservations.controller");
 const validationMiddleware = require("../middleware/reservationValidation.middleware")
 
-router.get('/:reservation_Id', controller.read);
-
+router.route("/:reservation_id")
+  .get(controller.read)
+  .put(
+    validationMiddleware.hasRequiredFields,
+    validationMiddleware.validateReservationDate,
+    validationMiddleware.validateReservationTime,
+    controller.updateReservation
+  );
 router.route("/")
   .get(validationMiddleware.hasQuery, controller.list)
   .post(
@@ -19,10 +24,11 @@ router.route("/")
     validationMiddleware.validateReservationStatus,
     controller.create
   );
+router.route("/:reservation_id/status")
+  .put(
+    validationMiddleware.validateStatus,
+    controller.updateStatus
+  );
 
-router.put('/:reservation_id/status',
-  validationMiddleware.validateStatus,
-  controller.updateStatus
-);
 
 module.exports = router;
