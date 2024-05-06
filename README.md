@@ -2,8 +2,8 @@
 
 ## Live Links
 
-- [Backend](#)
-- [Frontend](#)
+- [Backend](https://starter-restaurant-reservation-yop5.onrender.com)
+- [Frontend](https://starter-restaurant-reservation-1-3kf1.onrender.com)
 
 ## About
 
